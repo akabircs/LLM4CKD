@@ -11,7 +11,7 @@ It implements the experimental pipeline described in the paper:
 6. run paired permutation tests on per-sample Brier loss;
 7. generate paper-style result tables and plots.
 
-The package does **not** include the study datasets or proprietary API keys. Exact numeric reproduction requires the same Dataset-1 CSV, Dataset-2/UCI CKD CSV, preprocessing choices, and model versions used by the authors.
+The package does **not** include the study datasets or proprietary API keys. Exact numeric reproduction requires the same Dataset-1 CSV, [Dataset-2](https://archive.ics.uci.edu/dataset/336/chronic+kidney+disease), preprocessing choices, and model versions used by the authors.
 
 ## What this code reproduces
 
