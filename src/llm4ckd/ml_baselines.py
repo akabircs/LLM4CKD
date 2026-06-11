@@ -86,7 +86,7 @@ def model_registry(seed: int = 42, use_class_weight: bool = True) -> Dict[str, B
         )
     except Exception:
         pass
-
+    return models
 
 def make_pipeline(model: BaseEstimator, X_train: pd.DataFrame) -> Pipeline:
     return Pipeline([
