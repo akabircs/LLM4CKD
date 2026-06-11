@@ -49,25 +49,27 @@ def make_preprocessor(X: pd.DataFrame) -> ColumnTransformer:
 def model_registry(seed: int = 42, use_class_weight: bool = True) -> Dict[str, BaseEstimator]:
     class_weight = "balanced" if use_class_weight else None
     models: Dict[str, BaseEstimator] = {
-        "RF": RandomForestClassifier(n_estimators=300, random_state=seed, class_weight=class_weight),
+        "RF": RandomForestClassifier(random_state=seed, class_weight=class_weight), #n_estimators=300, 
         "GB": GradientBoostingClassifier(random_state=seed),
-        "ET": ExtraTreesClassifier(n_estimators=300, random_state=seed, class_weight=class_weight),
-        "LR": LogisticRegression(max_iter=5000, solver="liblinear", class_weight=class_weight, random_state=seed),
+        "ET": ExtraTreesClassifier(random_state=seed, class_weight=class_weight),
+        "LR": LogisticRegression(class_weight=class_weight, random_state=seed), #max_iter=5000, solver="liblinear", 
         "AB": AdaBoostClassifier(random_state=seed),
         "DT": DecisionTreeClassifier(random_state=seed, class_weight=class_weight),
-        "MLP": MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=2000, early_stopping=True, random_state=seed),
+        "MLP": MLPClassifier(random_state=seed), #hidden_layer_sizes=(64, 32), max_iter=2000, early_stopping=True, 
     }
     try:
         from xgboost import XGBClassifier
 
         models["XGB"] = XGBClassifier(
-            n_estimators=200,
-            max_depth=3,
-            learning_rate=0.05,
-            subsample=0.9,
-            colsample_bytree=0.9,
-            objective="binary:logistic",
-            eval_metric="logloss",
+            class_weight=class_weight, 
+            verbosity=0,
+            # n_estimators=200,
+            # max_depth=3,
+            # learning_rate=0.05,
+            # subsample=0.9,
+            # colsample_bytree=0.9,
+            # objective="binary:logistic",
+            # eval_metric="logloss",
             random_state=seed,
         )
     except Exception:
@@ -76,8 +78,8 @@ def model_registry(seed: int = 42, use_class_weight: bool = True) -> Dict[str, B
         from lightgbm import LGBMClassifier
 
         models["LGB"] = LGBMClassifier(
-            n_estimators=200,
-            learning_rate=0.05,
+            # n_estimators=200,
+            # learning_rate=0.05,
             class_weight=class_weight,
             random_state=seed,
             verbose=-1,
