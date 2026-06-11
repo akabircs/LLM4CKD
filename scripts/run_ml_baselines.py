@@ -62,7 +62,7 @@ def main():
                     rows.append({
                         "dataset": args.dataset,
                         "feature_set": args.feature_set,
-                        "family": "ML" if model_name != "TabPFN" else "TabularFoundation",
+                        "family": "ML",
                         "model": model_name,
                         "seed": seed,
                         "training_size": n_train,
