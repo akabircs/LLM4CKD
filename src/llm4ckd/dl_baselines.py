@@ -154,9 +154,14 @@ def dl_model_registry(seed: int = 42, device: str = "cpu", include_optional: boo
     except Exception as exc:
         print(f"[WARN] TabNet unavailable: {exc}")
     try:
-        node_model = OfficialNODEClassifier(seed=seed, device=device, node_repo_dir=node_repo_dir)
-        node_model._import_official_odst()
-        models["NODE"] = node_model
+        # node_model = OfficialNODEClassifier(seed=seed, device=device, node_repo_dir=node_repo_dir)
+        # node_model._import_official_odst()
+        # models["NODE"] = node_model
+        models["NODE"] = OfficialNODEClassifier(
+        seed=seed,
+        device=device,
+        node_repo_dir=node_repo_dir,
+        )
     except Exception as exc:
         print(f"[WARN] NODE unavailable: {exc}")
     try:
