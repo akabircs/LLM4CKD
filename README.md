@@ -1,6 +1,6 @@
 # LLM4CKD: Large Language Models for Early-Stage Chronic Kidney Disease Screening
 
-This repository contains the reproducibility code for **LLM4CKD**, a framework for evaluating large language models for low-resource chronic kidney disease screening using structured tabular clinical features.
+This repository contains the code for **LLM4CKD**, a framework for evaluating large language models for low-resource chronic kidney disease screening using structured tabular clinical features.
 
 The code supports:
 
