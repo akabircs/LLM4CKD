@@ -20,7 +20,7 @@ The paper reports:
 - Dataset-1: a Bangladeshi community cohort with 284 complete records, 112 early-stage CKD cases, and 172 non-CKD controls.
 - [Dataset-2](https://archive.ics.uci.edu/dataset/336/chronic+kidney+disease): the UCI CKD dataset with 400 records, 250 CKD and 150 non-CKD records.
 - Selected-feature prompting based on clinically meaningful predictors, including hypertension, age, urinary RBC, sleep duration, anemia, diabetes, obesity/BMI, family history of hypertension, and gender.
-- LLMs: Gemma-2-9B, Llama-3-8B, Qwen-3-8B, Mistral-7B, and GPT-4o-mini.
+- LLMs: [Gemma-2-9B](https://huggingface.co/google/gemma-2-9b-it), [Llama-3-8B](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct), [Qwen-3-8B](https://huggingface.co/Qwen/Qwen3-8B), [Mistral-7B](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3), and [GPT-4o-mini](https://platform.openai.com/docs/models/gpt-4o-mini).
 - Seeds: `0, 1, 32, 42, 1024`.
 - Low-data settings: `4, 8, 16, 32` in-context examples or training samples.
 
