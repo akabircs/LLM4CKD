@@ -73,9 +73,12 @@ class TabPFNSklearnClassifier(BaseEstimator, ClassifierMixin):
         self.device = device
 
     def fit(self, X, y):
-        from tabpfn import TabPFNClassifier
+        from tabpfn_client import TabPFNClassifier, set_access_token
+        from pathlib import Path
         X = np.asarray(X, dtype=np.float32)
         y = np.asarray(y, dtype=np.int64)
+        tabpfn_api_key = Path("config/tabpfn_api_key.txt").read_text().strip()
+        set_access_token(tabpfn_api_key)
         try:
             self.model_ = TabPFNClassifier(device=self.device, random_state=self.seed)
         except TypeError:
