@@ -2,6 +2,10 @@
 
 This directory is used for local dataset files.
 
+## Canonical feature names
+
+The loader normalizes column names to lowercase snake_case. For maximum compatibility, use these names.
+
 ## Dataset-1: Private Bangladesh Cohort
 
 Dataset-1 is a private community-based Bangladeshi cohort used for the main early-stage CKD screening experiments.
@@ -15,6 +19,45 @@ data/dataset1.csv
 ```
 
 This file is ignored by Git and should not be committed.
+
+### Dataset-1 all features
+
+- age
+- gender
+- illiterate
+- occupation
+- marital_status
+- sleeping_duration
+- tobacco_smoker
+- smokeless_tobacco
+- history_of_hypertension
+- history_of_diabetes
+- heart_disease
+- stroke
+- family_history_of_diabetes
+- family_history_of_hypertension
+- family_history_of_ckd
+- body_mass_index
+- abdominal_obesity
+- undernutrition
+- anemia
+- presence_of_red_blood_cells_in_urine
+- serum_albumin
+- hypercholesterolemia
+- hdl_cholesterol
+- hypertriglyceridemia
+
+### Dataset-1 selected features
+
+- history_of_hypertension
+- age
+- presence_of_red_blood_cells_in_urine
+- sleeping_duration
+- anemia
+- history_of_diabetes
+- body_mass_index
+- family_history_of_hypertension
+- gender
 
 ## Dataset-2: Public UCI CKD Dataset
 
