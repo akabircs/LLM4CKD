@@ -1,0 +1,121 @@
+paths:
+  dataset1: data/dataset1.csv
+  dataset2: data/dataset2.csv
+  outputs: outputs
+
+seeds: [0, 1, 32, 42, 1024]
+shots: [0, 4, 8, 16, 32]
+test_size: 0.20
+
+labels:
+  positive: 1
+  negative: 0
+  positive_names: ["1", "ckd", "yes", "true", "positive", "case"]
+  negative_names: ["0", "notckd", "non-ckd", "non_ckd", "no", "false", "negative", "control"]
+
+# Dataset-specific variables excluded to reduce label leakage.
+exclude_features:
+  dataset1:
+    - egfr
+    - e_gfr
+    - estimated_glomerular_filtration_rate
+    - uacr
+    - acr
+    - albumin_creatinine_ratio
+    - urine_albumin_creatinine_ratio
+  dataset2:
+    - serum_creatinine
+    - sc
+    - creatinine
+
+feature_sets:
+  dataset1:
+    all:
+      - age
+      - gender
+      - illiterate
+      - occupation
+      - marital_status
+      - sleeping_duration
+      - tobacco_smoker
+      - smokeless_tobacco
+      - history_of_hypertension
+      - history_of_diabetes
+      - heart_disease
+      - stroke
+      - family_history_of_diabetes
+      - family_history_of_hypertension
+      - family_history_of_ckd
+      - body_mass_index
+      - abdominal_obesity
+      - undernutrition
+      - anemia
+      - presence_of_red_blood_cells_in_urine
+      - serum_albumin
+      - hypercholesterolemia
+      - hdl_cholesterol
+      - hypertriglyceridemia
+    selected:
+      - history_of_hypertension
+      - age
+      - presence_of_red_blood_cells_in_urine
+      - sleeping_duration
+      - anemia
+      - history_of_diabetes
+      - body_mass_index
+      - family_history_of_hypertension
+      - gender
+  dataset2:
+    all:
+      - age
+      - blood_pressure
+      - specific_gravity
+      - albumin
+      - sugar
+      - presence_of_red_blood_cells_in_urine
+      - pus_cell
+      - pus_cell_clumps
+      - bacteria
+      - blood_glucose_random
+      - blood_urea
+      - sodium
+      - potassium
+      - hemoglobin
+      - packed_cell_volume
+      - white_blood_cell_count
+      - red_blood_cell_count
+      - history_of_hypertension
+      - history_of_diabetes
+      - coronary_artery_disease
+      - appetite_condition
+      - pedal_edema
+      - anemia
+    # Dataset-2 retains only selected Dataset-1 concepts that have matching variables.
+    selected:
+      - age
+      - history_of_hypertension
+      - history_of_diabetes
+      - presence_of_red_blood_cells_in_urine
+      - anemia
+
+llm_models:
+  gemma2: google/gemma-2-9b-it
+  llama3: meta-llama/Meta-Llama-3-8B-Instruct
+  qwen3: Qwen/Qwen3-8B
+  mistral: mistralai/Mistral-7B-Instruct-v0.3
+  gpt4omini: gpt-4o-mini
+
+prompt:
+  system_instruction: >-
+    You are a clinical classification model. Given a patient's structured clinical characteristics,
+    determine whether the patient has chronic kidney disease (CKD). The target label is binary,
+    where 1 indicates CKD and 0 indicates non-CKD.
+  input_description: >-
+    Each patient record consists of structured clinical features, including demographic variables,
+    medical history, laboratory measurements, and other relevant clinical attributes.
+  output_instruction: >-
+    Respond with exactly one token: 0 or 1. Do not provide any explanation, justification, or additional text.
+
+ml:
+  training_sizes: [4, 8, 16, 32]
+  use_class_weight_balanced: true

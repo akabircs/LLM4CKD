@@ -1,0 +1,24 @@
+name: llm4ckd-repro
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - statsmodels
+  - matplotlib
+  - pyyaml
+  - joblib
+  - tqdm
+  - pip
+  - pip:
+      - openai
+      - transformers
+      - accelerate
+      - shap
+      - xgboost
+      - lightgbm
+      - tabpfn
