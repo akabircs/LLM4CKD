@@ -85,7 +85,7 @@ data/dataset2.csv
 
 The generated CSV is ignored by Git so that the repository remains code-focused and does not redistribute local data files.
 
-## Dataset-2 Feature Name Mapping
+### Dataset-2 Feature Name Mapping
 
 The first column below shows the short feature name used in the downloaded UCI Dataset-2 file. The second column shows the corresponding full clinical feature name. The third column shows the harmonized feature name used internally by this repository.
 
@@ -117,17 +117,24 @@ The first column below shows the short feature name used in the downloaded UCI D
 | `ane` | anemia | `anemia` |
 | `class` | class | `target` |
 
-## Leakage-Variable Note
+### Dataset-2 selected features
 
-For Dataset-2 experiments, serum creatinine is excluded from model inputs because it is a direct kidney-function marker strongly related to CKD diagnosis.
+The paper maps the selected Dataset-1 concepts to Dataset-2 where available. This scaffold uses:
 
-Therefore, although the downloaded UCI file contains:
+- age
+- history_of_hypertension
+- history_of_diabetes
+- presence_of_red_blood_cells_in_urine
+- anemia
 
-```text
-sc - serum creatinine
-```
+## Leakage exclusions
 
-the reproducibility pipeline excludes it from the model feature set.
+Do not use direct diagnostic markers as model inputs because they are direct kidney-function markers strongly related to CKD diagnosis:
+
+- Dataset-1: eGFR and uACR/ACR columns.
+- Dataset-2: serum creatinine.
+
+The loader removes common aliases for these leakage variables automatically when present.
 
 ## Do Not Commit Local Data
 
