@@ -371,6 +371,8 @@ The relevant files are:
 
 ```text
 src/llm4ckd/dl_baselines.py
+src/llm4ckd/node.py
+src/llm4ckd/saint.py
 scripts/run_dl_baselines.py
 ```
 
@@ -388,6 +390,16 @@ ML baselines: RF, GB, ET, LR, AB, DT, XGB, MLP, LGB
 DL/foundation baselines: TabPFN, TabNet, NODE, SAINT
 ```
 
+The DL baseline implementation is organized as follows:
+
+```text
+src/llm4ckd/dl_baselines.py  -> shared preprocessing, TabPFN, TabNet, and DL model registry
+src/llm4ckd/node.py          -> official Qwicen/node ODST-based NODE wrapper
+src/llm4ckd/saint.py         -> official somepago/saint TabAttention-based SAINT wrapper
+```
+
+NODE and SAINT are not implemented through generic tabular-DL approximations. They use their official repositories when those repositories are available locally.
+
 ### Installing optional DL dependencies
 
 The DL/foundation baselines require optional packages that are not installed by the default lightweight setup.
@@ -395,14 +407,32 @@ The DL/foundation baselines require optional packages that are not installed by 
 For CPU execution:
 
 ```bash
-python -m pip install torch pytorch-tabnet pytorch-tabular tabpfn
+python -m pip install torch pytorch-tabnet tabpfn
 ```
 
 For GPU execution, install the PyTorch build matching your CUDA version from the official PyTorch installation guide, then install:
 
 ```bash
-python -m pip install pytorch-tabnet pytorch-tabular tabpfn
+python -m pip install pytorch-tabnet tabpfn
 ```
+
+NODE and SAINT additionally require local clones of their official repositories:
+
+```bash
+mkdir -p external
+git clone https://github.com/Qwicen/node.git external/node
+git clone https://github.com/somepago/saint.git external/saint
+```
+
+On Windows Command Prompt:
+
+```cmd
+mkdir external
+git clone https://github.com/Qwicen/node.git external\node
+git clone https://github.com/somepago/saint.git external\saint
+```
+
+If either official repository has its own environment or package requirements, install those requirements in the same Python environment before running the corresponding baseline.
 
 ### Running DL/foundation baselines
 
@@ -426,6 +456,60 @@ python scripts\run_dl_baselines.py ^
   --training-sizes 4 8 16 32 ^
   --device cpu ^
   --output outputs\predictions\dataset2_dl_selected.csv
+```
+
+To explicitly provide the official NODE and SAINT repository paths:
+
+```bash
+python scripts/run_dl_baselines.py \
+  --dataset dataset2 \
+  --feature-set selected \
+  --training-sizes 4 8 16 32 \
+  --node-repo-dir external/node \
+  --saint-repo-dir external/saint \
+  --device cpu \
+  --output outputs/predictions/dataset2_dl_selected.csv
+```
+
+On Windows Command Prompt:
+
+```cmd
+python scripts\run_dl_baselines.py ^
+  --dataset dataset2 ^
+  --feature-set selected ^
+  --training-sizes 4 8 16 32 ^
+  --node-repo-dir external\node ^
+  --saint-repo-dir external\saint ^
+  --device cpu ^
+  --output outputs\predictions\dataset2_dl_selected.csv
+```
+
+To run only NODE and SAINT:
+
+```bash
+python scripts/run_dl_baselines.py \
+  --dataset dataset2 \
+  --feature-set selected \
+  --training-sizes 4 8 16 32 \
+  --models NODE SAINT \
+  --node-repo-dir external/node \
+  --saint-repo-dir external/saint \
+  --device cpu \
+  --output outputs/predictions/dataset2_node_saint_selected.csv
+```
+
+On Windows Command Prompt:
+
+```cmd
+python scripts\run_dl_baselines.py ^
+  --dataset dataset2 ^
+  --feature-set selected ^
+  --training-sizes 4 8 16 32 ^
+  --models NODE SAINT ^
+  --node-repo-dir external\node ^
+  --saint-repo-dir external\saint ^
+  --device cpu ^
+  --output outputs\predictions\dataset2_node_saint_selected.csv
 ```
 
 For GPU execution, replace:
@@ -470,45 +554,76 @@ TabNet can run on CPU or GPU depending on the installed PyTorch environment.
 
 ### Notes on NODE
 
-NODE is included as a tabular deep-learning baseline.
-
-The paper references the official NODE implementation:
+NODE is implemented through an official [Qwicen/node](https://github.com/Qwicen/node) wrapper in:
 
 ```text
-https://github.com/Qwicen/node
+src/llm4ckd/node.py
 ```
 
-The repository-level `run_dl_baselines.py` script attempts to run NODE through the installed tabular-DL backend when available. NODE can be more memory-sensitive than simpler tabular models, especially with larger feature spaces or batch sizes.
-
-If NODE fails because of memory constraints:
-
-1. Try CPU execution.
-2. Reduce batch size inside `src/llm4ckd/dl_baselines.py`.
-3. Use the official NODE repository for exact reproduction.
-
-A practical workflow for exact NODE reproduction is:
+The repository wrapper imports the official ODST layer from the local NODE clone and trains a compact NODE classifier for low-data settings. The official NODE repository should be cloned locally before running NODE:
 
 ```bash
 git clone https://github.com/Qwicen/node.git external/node
 ```
 
-Then adapt the preprocessed train/test splits exported from this repository as inputs to the official NODE training code.
+On Windows Command Prompt:
+
+```cmd
+git clone https://github.com/Qwicen/node.git external\node
+```
+
+The script searches for the NODE repository in the following order:
+
+```text
+--node-repo-dir argument
+NODE_REPO_DIR environment variable
+external/node
+node
+node_official
+~/node
+~/node_official
+```
+
+NODE can be memory-sensitive, especially with larger feature spaces, deeper trees, or larger batches. If NODE fails because of memory constraints:
+
+1. Try CPU execution.
+2. Reduce the NODE batch size or model size in `src/llm4ckd/node.py`.
+3. Reduce `num_trees`, `depth`, or `num_layers`.
+4. Run only NODE first using `--models NODE`.
 
 ### Notes on SAINT
 
-SAINT is included as an optional tabular deep-learning baseline.
-
-The official SAINT implementation is available at:
+SAINT is implemented through an official [somepago/saint](https://github.com/somepago/saint) wrapper in:
 
 ```text
-https://github.com/somepago/saint
+src/llm4ckd/saint.py
 ```
 
-The repository-level `run_dl_baselines.py` script attempts to run SAINT when a compatible backend configuration is available. If the installed environment does not expose a SAINT-compatible configuration, the script skips SAINT and continues running the remaining baselines.
+The repository wrapper imports the official `TabAttention` class from the local SAINT clone and follows the official SAINT forward contract using continuous-feature encodings. In this pipeline, categorical variables are first converted to dense one-hot numeric features by the shared DL preprocessor, so SAINT receives all features as continuous inputs.
 
-For exact SAINT reproduction, use the official SAINT repository and its recommended environment setup.
+The official SAINT repository should be cloned locally before running SAINT:
 
-A practical workflow is:
+```bash
+git clone https://github.com/somepago/saint.git external/saint
+```
+
+On Windows Command Prompt:
+
+```cmd
+git clone https://github.com/somepago/saint.git external\saint
+```
+
+The script searches for the SAINT repository in the following order:
+
+```text
+--saint-repo-dir argument
+SAINT_REPO_DIR environment variable
+external/saint
+saint
+~/saint
+```
+
+For exact SAINT environment reproduction, follow the official SAINT repository setup. A practical workflow is:
 
 ```bash
 git clone https://github.com/somepago/saint.git external/saint
@@ -517,7 +632,7 @@ conda env create -f saint_environment.yml
 conda activate saint_env
 ```
 
-Then adapt the LLM4CKD preprocessed train/test splits as input files for the official SAINT scripts.
+If using a separate SAINT conda environment, make sure the LLM4CKD package and required dependencies are also available in that environment, or export the preprocessed train/test splits and run SAINT there.
 
 ---
 
@@ -536,6 +651,7 @@ Example output files:
 outputs/predictions/dataset2_qwen3_zero_shot.csv
 outputs/predictions/dataset2_ml_selected.csv
 outputs/predictions/dataset2_dl_selected.csv
+outputs/predictions/dataset2_node_saint_selected.csv
 ```
 
 Generated outputs are ignored by Git by default.
@@ -551,8 +667,10 @@ Before running experiments, verify:
 3. Private data are not committed.
 4. API keys are stored locally and not committed.
 5. Optional DL dependencies are installed only when needed.
-6. GPU/CUDA versions are compatible with the installed PyTorch build.
-7. The same random seeds and training sizes are used as in `config/default.yaml`.
+6. The official NODE repository has been cloned if running NODE.
+7. The official SAINT repository has been cloned if running SAINT.
+8. GPU/CUDA versions are compatible with the installed PyTorch build.
+9. The same random seeds and training sizes are used as in `config/default.yaml`.
 
 ---
 
@@ -569,6 +687,7 @@ results/
 cache/
 models/
 checkpoints/
+external/
 *.pt
 *.pth
 *.safetensors
@@ -664,15 +783,46 @@ python scripts/run_ml_baselines.py \
   --output outputs/predictions/dataset2_ml_selected.csv
 ```
 
-### 6. Run DL/foundation baselines
+### 6. Prepare official NODE and SAINT repositories
+
+```bash
+mkdir -p external
+git clone https://github.com/Qwicen/node.git external/node
+git clone https://github.com/somepago/saint.git external/saint
+```
+
+On Windows Command Prompt:
+
+```cmd
+mkdir external
+git clone https://github.com/Qwicen/node.git external\node
+git clone https://github.com/somepago/saint.git external\saint
+```
+
+### 7. Run DL/foundation baselines
 
 ```bash
 python scripts/run_dl_baselines.py \
   --dataset dataset2 \
   --feature-set selected \
   --training-sizes 4 8 16 32 \
+  --node-repo-dir external/node \
+  --saint-repo-dir external/saint \
   --device cpu \
   --output outputs/predictions/dataset2_dl_selected.csv
+```
+
+On Windows Command Prompt:
+
+```cmd
+python scripts\run_dl_baselines.py ^
+  --dataset dataset2 ^
+  --feature-set selected ^
+  --training-sizes 4 8 16 32 ^
+  --node-repo-dir external\node ^
+  --saint-repo-dir external\saint ^
+  --device cpu ^
+  --output outputs\predictions\dataset2_dl_selected.csv
 ```
 
 ---
