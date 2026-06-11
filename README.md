@@ -409,13 +409,13 @@ The DL/foundation baselines require optional packages that are not installed by 
 For CPU execution:
 
 ```bash
-python -m pip install torch pytorch-tabnet tabpfn
+python -m pip install torch pytorch-tabnet tabpfn-client
 ```
 
 For GPU execution, install the PyTorch build matching your CUDA version from the official PyTorch installation guide, then install:
 
 ```bash
-python -m pip install pytorch-tabnet tabpfn
+python -m pip install pytorch-tabnet tabpfn-client
 ```
 
 NODE and SAINT additionally require local clones of their official repositories:
@@ -528,12 +528,12 @@ with:
 
 ### Notes on TabPFN
 
-TabPFN is a tabular foundation model. In this repository it is grouped with DL/foundation baselines rather than conventional ML baselines.
+TabPFN is a tabular foundation model. In this repository, it is grouped with DL/foundation baselines rather than conventional ML baselines.
 
 TabPFN is usually easy to run through the Python package:
 
 ```bash
-python -m pip install tabpfn
+python -m pip install tabpfn-client
 ```
 
 If GPU memory is limited, run it with:
@@ -541,6 +541,11 @@ If GPU memory is limited, run it with:
 ```text
 --device cpu
 ```
+
+To run TabPFN through the PriorLabs API client, generate an API key from [PriorLabs](https://ux.priorlabs.ai/home) and save it locally in:
+
+```text
+config/tabpfn_api_key.txt
 
 ### Notes on TabNet
 
