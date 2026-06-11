@@ -546,6 +546,7 @@ To run TabPFN through the PriorLabs API client, generate an API key from [PriorL
 
 ```text
 config/tabpfn_api_key.txt
+```
 
 ### Notes on TabNet
 
