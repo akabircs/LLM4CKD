@@ -1,6 +1,11 @@
-# Data
+# Data directory
 
-This directory is used for local dataset files.
+Place CSV files here:
+
+```text
+data/dataset1.csv
+data/dataset2.csv
+```
 
 ## Canonical feature names
 
