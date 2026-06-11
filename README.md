@@ -1,6 +1,6 @@
-# LLM4CKD reproducibility package
+# LLM4CKD
 
-This repository is a paper-driven reproducibility scaffold for **LLM4CKD: Large Language Models for Early Stage Chronic Kidney Disease Screening**.
+This repository is for **LLM4CKD: Large Language Models for Early Stage Chronic Kidney Disease Screening**.
 It implements the experimental pipeline described in the paper:
 
 1. harmonize tabular CKD features;
