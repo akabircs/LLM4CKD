@@ -17,9 +17,9 @@ The package does **not** include the study datasets or proprietary API keys. Exa
 
 The paper reports:
 
-- Dataset-1: a Bangladeshi community cohort with 284 complete records, 112 early-stage CKD cases and 172 non-CKD controls.
-- Dataset-2: the UCI CKD dataset with 400 records, 250 CKD and 150 non-CKD records.
-- Selected-feature prompting based on clinically meaningful predictors including hypertension, age, urinary RBC, sleep duration, anemia, diabetes, obesity/BMI, family history of hypertension, and gender.
+- Dataset-1: a Bangladeshi community cohort with 284 complete records, 112 early-stage CKD cases, and 172 non-CKD controls.
+- [Dataset-2](https://archive.ics.uci.edu/dataset/336/chronic+kidney+disease): the UCI CKD dataset with 400 records, 250 CKD and 150 non-CKD records.
+- Selected-feature prompting based on clinically meaningful predictors, including hypertension, age, urinary RBC, sleep duration, anemia, diabetes, obesity/BMI, family history of hypertension, and gender.
 - LLMs: Gemma-2-9B, Llama-3-8B, Qwen-3-8B, Mistral-7B, and GPT-4o-mini.
 - Seeds: `0, 1, 32, 42, 1024`.
 - Low-data settings: `4, 8, 16, 32` in-context examples or training samples.
@@ -178,6 +178,6 @@ python scripts/plot_results.py \
 
 - The paper evaluates LLM predictions using token-level log-probabilities over labels `0` and `1`. The implementation here normalizes the two label likelihoods into a CKD probability.
 - Different model checkpoints, tokenizer revisions, quantization, GPU kernels, and API versions can change results.
-- The paper excludes direct diagnostic leakage variables such as eGFR/uACR in Dataset-1 and serum creatinine in Dataset-2. Keep those columns out of the feature set.
+- The paper excludes direct diagnostic leakage variables such as eGFR/uACR in Dataset-1 and serum creatinine in [Dataset-2](https://archive.ics.uci.edu/dataset/336/chronic+kidney+disease). Keep those columns out of the feature set.
 - For few-shot LLM and ML/DL baselines, the same stratified 80/20 split and same sampled training examples should be used per seed.
 
