@@ -135,10 +135,10 @@ class OpenAIConstrainedClassifier:
 def make_llm_backend(backend: str, model_id: str | None = None):
     if backend == "prompt_only":
         return PromptOnlyClassifier()
-    if backend == "hf":
-        if not model_id:
-            raise ValueError("--model-id is required for backend=hf")
-        return HuggingFaceConstrainedClassifier(model_id=model_id)
+    if backend in {"hf", "local_hf"}:
+            if not model_id:
+                raise ValueError(f"--model-id is required for backend={backend}")
+            return HuggingFaceConstrainedClassifier(model_id=model_id)
     if backend == "openai":
         return OpenAIConstrainedClassifier(model_id=model_id or "gpt-4o-mini")
-    raise ValueError("backend must be one of: prompt_only, hf, openai")
+    raise ValueError("backend must be one of: prompt_only, hf, local_hf, openai")
