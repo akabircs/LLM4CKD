@@ -26,7 +26,7 @@ def parse_args():
     p.add_argument("--prompt-style", choices=["instruction", "chat"], default="instruction")
     p.add_argument("--serialization", choices=["list", "text"], default="list")
     p.add_argument("--shots", type=int, default=0)
-    p.add_argument("--backend", choices=["prompt_only", "hf", "openai"], default="prompt_only")
+    p.add_argument("--backend", choices=["prompt_only", "local_hf", "hf", "openai"], default="hf")
     p.add_argument("--model-id", default=None)
     p.add_argument("--output", required=True)
     p.add_argument("--limit", type=int, default=None, help="Optional cap for debugging.")
