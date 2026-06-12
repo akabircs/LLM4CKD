@@ -845,7 +845,11 @@ The code and models are not intended for clinical deployment, diagnosis, or trea
 
 ## License
 
-See `LICENSE`.
+This project is licensed under the Apache License 2.0.
+
+Copyright (c) 2026 Ashad Kabir.
+
+See [LICENSE](./LICENSE) and [NOTICE](./NOTICE) for details.
 
 ---
 
