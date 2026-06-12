@@ -16,7 +16,8 @@ def softmax_two(logp0: float, logp1: float) -> tuple[float, float]:
 
 class PromptOnlyClassifier:
     """No-op classifier for prompt auditing."""
-
+    def __init__(self):
+        self.last_prompt_tokens = None
     def predict_proba(self, prompt_or_messages):
         return 0.5, 0.5
 
@@ -35,6 +36,7 @@ class HuggingFaceConstrainedClassifier:
             kwargs["torch_dtype"] = "auto"
         self.model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
         self.model.eval()
+        self.last_prompt_tokens = None
 
     def _render(self, prompt_or_messages):
         if isinstance(prompt_or_messages, list):
@@ -53,6 +55,7 @@ class HuggingFaceConstrainedClassifier:
         # Compute log P(label tokens | prompt). A leading space is intentionally not added
         # because the prompt ends with "Output:" and the paper constrains output to 0/1.
         enc_prompt = self.tokenizer(prompt, return_tensors="pt")
+        self.last_prompt_tokens = int(enc_prompt.input_ids.shape[1])
         enc_label = self.tokenizer(label, add_special_tokens=False, return_tensors="pt")
         input_ids = self.torch.cat([enc_prompt.input_ids, enc_label.input_ids], dim=1).to(self.model.device)
         attn = self.torch.ones_like(input_ids).to(self.model.device)
@@ -87,6 +90,7 @@ class OpenAIConstrainedClassifier:
 
         self.model_id = model_id
         self.client = OpenAI()
+        self.last_prompt_tokens = None
 
     def predict_proba(self, prompt_or_messages) -> tuple[float, float]:
         if isinstance(prompt_or_messages, str):
@@ -101,6 +105,10 @@ class OpenAIConstrainedClassifier:
             logprobs=True,
             top_logprobs=10,
         )
+        try:
+            self.last_prompt_tokens = resp.usage.prompt_tokens
+        except Exception:
+            self.last_prompt_tokens = None
         choice = resp.choices[0]
         content = (choice.message.content or "").strip()
         logp0 = logp1 = None
