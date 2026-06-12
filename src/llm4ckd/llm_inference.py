@@ -25,15 +25,32 @@ class PromptOnlyClassifier:
 class HuggingFaceConstrainedClassifier:
     """Compute normalized label probabilities P(label=0/1 | prompt) using a causal LM."""
 
-    def __init__(self, model_id: str, device_map: str = "auto", dtype: str | None = "auto"):
+    def __init__(self, model_id: str, device_map: str = "auto", dtype: str | None = "auto", load_in_4bit: bool = False,):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         self.torch = torch
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-        kwargs = {"device_map": device_map, "trust_remote_code": True}
-        if dtype == "auto":
-            kwargs["torch_dtype"] = "auto"
+        kwargs = { "trust_remote_code": True, "low_cpu_mem_usage": True,}
+        
+        if load_in_4bit:
+            from transformers import BitsAndBytesConfig
+
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+            )
+
+            kwargs["quantization_config"] = bnb_config
+            kwargs["device_map"] = device_map
+
+        else:
+            kwargs["device_map"] = device_map
+            if dtype == "auto":
+                kwargs["torch_dtype"] = "auto"
+        
         self.model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
         self.model.eval()
         self.last_prompt_tokens = None
@@ -132,13 +149,13 @@ class OpenAIConstrainedClassifier:
         return softmax_two(float(logp0), float(logp1))
 
 
-def make_llm_backend(backend: str, model_id: str | None = None):
+def make_llm_backend(backend: str, model_id: str | None = None, load_in_4bit: bool = False,):
     if backend == "prompt_only":
         return PromptOnlyClassifier()
     if backend in {"hf", "local_hf"}:
             if not model_id:
                 raise ValueError(f"--model-id is required for backend={backend}")
-            return HuggingFaceConstrainedClassifier(model_id=model_id)
+            return HuggingFaceConstrainedClassifier(model_id=model_id, load_in_4bit=load_in_4bit,)
     if backend == "openai":
         return OpenAIConstrainedClassifier(model_id=model_id or "gpt-4o-mini")
     raise ValueError("backend must be one of: prompt_only, hf, local_hf, openai")
