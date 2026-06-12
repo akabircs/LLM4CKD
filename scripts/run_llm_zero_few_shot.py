@@ -90,6 +90,7 @@ def main():
                 "y_true": int(y.iloc[abs_i]),
                 "y_prob": float(p1),
                 "y_pred": int(p1 >= 0.5),
+                "prompt_tokens": getattr(clf, "last_prompt_tokens", None),
                 "prompt": render_for_csv(prompt_obj),
             })
 
