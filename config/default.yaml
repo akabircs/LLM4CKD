@@ -105,6 +105,22 @@ llm_models:
   mistral: mistralai/Mistral-7B-Instruct-v0.3
   gpt4omini: gpt-4o-mini
 
+# Example for Windows:
+# llm_models:
+#   gemma2: "C:/Users/akabir/models/gemma-2-9b-it"
+#   llama3: "C:/Users/akabir/models/Meta-Llama-3-8B-Instruct"
+#   qwen3: "C:/Users/akabir/models/Qwen3-8B"
+#   mistral: "C:/Users/akabir/models/Mistral-7B-Instruct-v0.3"
+#   gpt4omini: "gpt-4o-mini"
+
+# For Colab/Linux:
+# llm_models:
+#   gemma2: "/content/models/gemma-2-9b-it"
+#   llama3: "/content/models/Meta-Llama-3-8B-Instruct"
+#   qwen3: "/content/models/Qwen3-8B"
+#   mistral: "/content/models/Mistral-7B-Instruct-v0.3"
+#   gpt4omini: "gpt-4o-mini"
+  
 prompt:
   system_instruction: >-
     You are a clinical classification model. Given a patient's structured clinical characteristics,
