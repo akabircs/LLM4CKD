@@ -28,6 +28,7 @@ def parse_args():
     p.add_argument("--shots", type=int, default=0)
     p.add_argument("--backend", choices=["prompt_only", "local_hf", "hf", "openai"], default="hf")
     p.add_argument("--model-id", default=None)
+    p.add_argument("--load-in-4bit", action="store_true", help="Load Hugging Face/local Hugging Face model using 4-bit bitsandbytes quantization.",)
     p.add_argument("--output", required=True)
     p.add_argument("--limit", type=int, default=None, help="Optional cap for debugging.")
     return p.parse_args()
@@ -48,7 +49,7 @@ def main():
     X_raw, y = load_dataset(args.dataset, config, root)
     X = clean_missing_values(select_features(X_raw, args.dataset, args.feature_set, config))
     features = list(X.columns)
-    clf = make_llm_backend(args.backend, model_id=args.model_id)
+    clf = make_llm_backend(args.backend, model_id=args.model_id, load_in_4bit=args.load_in_4bit,)
     model_name = args.model_id or args.backend
 
     rows = []
